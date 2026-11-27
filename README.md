@@ -1,55 +1,41 @@
-# Getting Started Todo App
+# Todoアプリの始め方
 
-This project provides a sample todo list application. It demonstrates all of
-the current Docker best practices, ranging from the Compose file, to the
-Dockerfile, to CI (using GitHub Actions), and running tests. It's intended to 
-be well-documented to ensure anyone can come in and easily learn.
+このプロジェクトは、ToDoリストアプリケーションのサンプルを提供します。ComposeファイルからDockerfile、GitHub Actionsを使用したCI、そしてテストの実行に至るまで、現在のDockerに関するベストプラクティスをすべて紹介しています。誰でもすぐに取り組んで簡単に学べるよう、詳細なドキュメントを用意しています。
 
-## Application architecture
+## アプリケーションアーキテクチャー
 
 ![image](https://github.com/docker/getting-started-todo-app/assets/313480/c128b8e4-366f-4b6f-ad73-08e6652b7c4d)
 
 
-This sample application is a simple React frontend that receives data from a
-Node.js backend. 
+このサンプルアプリケーションは、Node.jsのバックエンドからデータを受け取るシンプルなReactフロントエンドです。
 
-When the application is packaged and shipped, the frontend is compiled into
-static HTML, CSS, and JS and then bundled with the backend where it is then
-served as static assets. So no... there is no server-side rendering going on
-with this sample app.
+アプリケーションがパッケージ化されて配布される際、フロントエンドは静的なHTML、CSS、JSにコンパイルされ、バックエンドとバンドルされて静的アセットとして配信されます。つまり、このサンプルアプリではサーバーサイドレンダリングは行われていません。
 
-During development, since the backend and frontend need different dev tools, 
-they are split into two separate services. This allows [Vite](https://vitejs.dev/) 
-to manage the React app while [nodemon](https://nodemon.io/) works with the 
-backend. With containers, it's easy to separate the development needs!
+開発中は、バックエンドとフロントエンドで必要な開発ツールが異なるため、これらは2つの別々のサービスに分割されています。これにより、[Vite](https://vitejs.dev/) がReactアプリを管理し、[nodemon](https://nodemon.io/) がバックエンドを処理できるようになります。コンテナを使えば、開発上の要件を簡単に分離できます！
 
-## Development
+## 実行
 
-To spin up the project, simply install Docker Desktop and then run the following 
-commands:
+プロジェクトを起動するには、Docker Desktop をインストールし、以下のコマンドを実行するだけです：
 
 ```
-git clone https://github.com/docker/getting-started-todo-app
+git clone https://github.com/xlsoftkk/getting-started-todo-app
 cd getting-started-todo-app
 docker compose up --watch
 ```
 
-You'll see several container images get downloaded from Docker Hub and, after a
-moment, the application will be up and running! No need to install or configure
-anything on your machine!
+Docker Hub からいくつかのコンテナイメージがダウンロードされ、しばらくするとアプリケーションが起動して動作し始めます！お使いのマシンに何かをインストールしたり設定したりする必要はありません！
 
-Simply open to [http://localhost](http://localhost) to see the app up and running!
+[http://localhost](http://localhost) にアクセスするだけで、アプリが動作しているのを確認できます！
 
-Any changes made to either the backend or frontend should be seen immediately
-without needing to rebuild or restart the containers.
+バックエンドやフロントエンドに加えた変更は、コンテナを再構築したり再起動したりすることなく、即座に反映されます。
 
-To help with the database, the development stack also includes phpMyAdmin, which
-can be accessed at [http://db.localhost](http://db.localhost) (most browsers will 
-resolve `*.localhost` correctly, so no hosts file changes should be required).
+データベースの運用を支援するため、開発スタックにはphpMyAdminも含まれており、
+[http://db.localhost](http://db.localhost) からアクセスできます（ほとんどのブラウザでは
+`*.localhost` が正しく解決されるため、hosts ファイルの変更は必要ないはずです）。
 
-### Tearing it down
+### 終了処理
 
-When you're done, simply remove the containers by running the following command:
+作業が完了したら、次のコマンドを実行してコンテナを削除してください：
 
 ```
 docker compose down
