@@ -1,41 +1,38 @@
 ###################################################
-# This Compose file provides the development environment for the todo app.
-# 
-# Seeing the final version of the application bundles the frontend with the
-# backend, we are able to "simulate" that by using a proxy to route requests
-# to the appropriate service. All requests to /api will be routed to the 
-# backend while all other requests will be sent to the client service. While
-# there is some overlap in the routing rules, the proxy determines the service
-# based on the most specific rule.
+# この Compose ファイルは、ToDo アプリの開発環境を提供します。
 #
-# To support easier debugging and troubleshooting, phpMyAdmin is also included
-# to provide a web interface to the MySQL database.
+# アプリケーションの最終バージョンではフロントエンドとバックエンドがバンドルされていますが、
+# プロキシを使用してリクエストを適切なサービスにルーティングすることで、その動作を「シミュレート」することができます。
+# /api へのすべてのリクエストはバックエンドにルーティングされ、それ以外のリクエストはすべてクライアントサービスに送信されます。
+# ルーティングルールには一部重複がありますが、プロキシは最も具体的なルールに基づいてサービスを決めます。
+#
+# デバッグやトラブルシューティングを容易にするため、
+# MySQL データベースへの Web インターフェースを提供する phpMyAdmin も含まれています。
 ###################################################
 
 ###################################################
 # Services
 #
-# The services define the individual components of our application stack.
-# For each service, a separate container will be launched.
+# Services は、アプリケーションスタックを構成する個々のコンポーネントを定義します。
+# Service ごとに、個別のコンテナが起動されます。
 ###################################################
 services:
 
   ###################################################
   # Service: proxy
   #
-  # This service is a reverse proxy that will route requests to the appropriate
-  # service. Think of it like a HTTP router or a load balancer. It simply 
-  # forwards requests and allows us to simulate the final version of the 
-  # application where the frontend and backend are bundled together. We can 
-  # also use it to route requests to phpMyAdmin, which won't be accessible at 
-  # localhost, but at db.localhost.
+  # このサービスは、リクエストを適切なサービスへ転送するリバースプロキシです。
+  # HTTPルーターやロードバランサーのようなものと考えてください。
+  # これは単にリクエストを転送するものであり、フロントエンドとバックエンドが統合された
+  # アプリケーションの最終バージョンをシミュレートすることを可能にします。
+  # また、このサービスを使用して、phpMyAdmin へのリクエストをルーティングすることもできます。
+  # phpMyAdmin は localhost からはアクセスできず、db.localhost からアクセスする必要があります。
   #
-  # The image for this service comes directly from Docker Hub and is a Docker
-  # Official Image. Since Traefik can be configured in a variety of ways, we
-  # configure it here to watch the Docker events for new containers and to use
-  # their labels for configuration. That's why the Docker socket is mounted.
+  # このサービスのイメージは Docker Hub から直接取得したもので、Docker 公式イメージです。
+  # Traefik は様々な方法で設定できるため、ここでは新しいコンテナの Docker イベントを監視し、
+  # そのラベルを設定に利用するように構成しています。そのため、Docker ソケットがマウントされています。
   #
-  # We also expose port 80 to connect to the proxy from the host machine.
+  # また、ホストマシンからプロキシに接続するために、ポート 80 を公開しています。
   ###################################################
   proxy:
     image: traefik:v3.6
@@ -48,22 +45,22 @@ services:
   ###################################################
   # Service: backend
   # 
-  # This service is the Node.js server that provides the API for the app.
-  # When the container starts, it will use the image that results
-  # from building the Dockerfile, targeting the backend-dev stage.
+  # このサービスは、アプリ向けのAPIを提供するNode.jsサーバーです。
+  # コンテナが起動すると、backend-devステージをターゲットとして
+  # Dockerfileをビルドした結果得られるイメージが使用されます。
   #
-  # The Compose Watch configuration is used to automatically sync the code
-  # from the host machine to the container. This allows the server to be
-  # automatically reloaded when code changes are made.
+  # Compose Watchの設定は、ホストマシンからコンテナへコードを
+  # 自動的に同期するために使用されます。これにより、コードに変更が加えられた際に
+  # サーバーが自動的に再読み込みされます。
   #
-  # The environment variables configure the application to connect to the
-  # database, which is also configured in this Compose file. We obviously
-  # wouldn't hard-code these values in a production environment. But, in
-  # dev, these values are fine.
+  # 環境変数により、アプリケーションがデータベースに接続できるよう設定されます。
+  # データベースの設定もこの Compose ファイル内で行われます。
+  # もちろん、本番環境ではこれらの値をハードコーディングすることはありません。
+  # しかし、開発環境では、これらの値で問題ありません。
   #
-  # Finally, the labels are used to configure Traefik (the reverse proxy) with
-  # the appropriate routing rules. In this case, all requests to localhost/api/*
-  # will be forwarded to this service's port 3000. 
+  # 最後に、ラベルを使用して、Traefik（リバースプロキシ）に
+  # 適切なルーティングルールを設定します。この場合、localhost/api/* へのすべてのリクエストは
+  # このサービスのポート 3000 に転送されます。
   ###################################################
   backend:
     build:
@@ -91,17 +88,17 @@ services:
   ###################################################
   # Service: client
   #
-  # The client service is the React app that provides the frontend for the app.
-  # When the container starts, it will use the image that results from building
-  # the Dockerfile, targeting the dev stage.
+  # クライアントサービスとは、アプリのフロントエンドを提供する React アプリのことです。
+  # コンテナが起動すると、dev ステージを対象として Dockerfile をビルドした結果として生成された
+  # イメージが使用されます。
   #
-  # The Compose Watch configuration is used to automatically sync the code from
-  # the host machine to the container. This allows the client to be automatically
-  # reloaded when code changes are made.
-  # 
-  # The labels are used to configure Traefik (the reverse proxy) with the 
-  # appropriate routing rules. In this case, all requests to localhost will be
-  # forwarded to this service's port 5173.
+  # Compose Watch の設定は、ホストマシンからコンテナへコードを自動的に同期するために使用されます。
+  # これにより、コードに変更が加えられた際にクライアントが自動的に
+  # 再読み込みされるようになります。
+  #
+  # ラベルは、Traefik（リバースプロキシ）に
+  # 適切なルーティングルールを設定するために使用されます。この場合、localhost へのすべてのリクエストは
+  # このサービスのポート 5173 に転送されます。
   ###################################################
   client:
     build:
@@ -122,18 +119,17 @@ services:
   ###################################################
   # Service: mysql
   #
-  # The MySQL service is used to provide the database for the application.
-  # The image for this service comes directly from Docker Hub and is a Docker 
-  # Official Image.
-  
-  # The data is persisted in a volume named todo-mysql-data. Using a volume 
-  # allows us to take down the services without losing the data. When we start
-  # the services again, the data will still be there (assuming we didn't delete
-  # the volume, of course!).
+  # MySQL サービスは、アプリケーションにデータベースを提供するために使用されます。
+  # このサービスのイメージは Docker Hub から直接取得されており、Docker 公式イメージです。
   #
-  # The environment variables configure the root password and the name of the
-  # database to create. Since these are used only for local development, it's
-  # ok to hard-code them here.
+  # データは todo-mysql-data という名前のボリュームに永続化されます。
+  # ボリュームを使用することで、データを失うことなくサービスを停止することができます。
+  # サービスを再起動しても、データはそのまま残っています（もちろん、ボリュームを
+  # 削除していない場合に限ります！）。
+  #
+  # 環境変数では、root パスワードと作成するデータベース名を設定します。
+  # これらはローカル開発でのみ使用されるため、
+  # ここでハードコーディングしても問題ありません。
   ###################################################
   mysql:
     image: mysql:9.3
@@ -151,17 +147,17 @@ services:
   ###################################################
   # Service: phpmyadmin
   #
-  # This service provides a web interface to the MySQL database. It's useful
-  # for debugging and troubleshooting data, schemas, and more. The image for 
-  # this service comes directly from Docker Hub and is a Docker Official Image.
+  # このサービスは、MySQL データベースへの Web インターフェースを提供します。
+  # これは、データやスキーマなどのデバッグやトラブルシューティングに役立ちます。
+  # このサービスのイメージは Docker Hub から直接取得されており、Docker 公式イメージです。
   #
-  # The environment variables configure the connection to the database and 
-  # provide the default credentials, letting us immediately open the interface
-  # without needing to log in.
+  # 環境変数により、データベースへの接続設定が行われ、
+  # デフォルトの認証情報が指定されるため、ログインすることなく
+  # すぐにインターフェースを開くことができます。
   #
-  # The labels are used to configure Traefik (the reverse proxy) with the
-  # routing rules. In this case, all requests to db.localhost will be forwarded
-  # to this service's port 80.
+  # ラベルは、Traefik（リバースプロキシ）にルーティングルールを設定するために使用されます。
+  # この場合、db.localhost へのすべてのリクエストは、
+  # このサービスのポート 80 に転送されます。
   ###################################################
   phpmyadmin:
     image: phpmyadmin
@@ -176,9 +172,9 @@ services:
 ###################################################
 # Volumes
 #
-# For this application stack, we only have one volume. It's used to persist the
-# data for the MySQL service. We are only going to use the default values,
-# hence the lack of any configuration for the volume.
+# このアプリケーションスタックには、ボリュームが1つしかありません。
+# これは、MySQL サービスのデータを永続化するために使用されます。
+# ここではデフォルト値のみを使用するため、ボリュームに関する設定は一切行っていません。
 ###################################################
 volumes:
   todo-mysql-data:
