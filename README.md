@@ -18,7 +18,7 @@
 プロジェクトを起動するには、Docker Desktop をインストールし、以下のコマンドを実行するだけです：
 
 ```
-git clone https://github.com/xlsoftkk/getting-started-todo-app
+git clone https://github.com/XLsoft-Corporation/getting-started-todo-app
 cd getting-started-todo-app
 docker compose up --watch
 ```
